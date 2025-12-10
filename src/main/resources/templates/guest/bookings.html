@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои бронирования</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Отель</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/guest/dashboard}">Главная</a>
+                <a class="nav-link" th:href="@{/guest/bookings}">Мои бронирования</a>
+                <a class="nav-link" th:href="@{/guest/profile}">Профиль</a>
+                <a class="nav-link" th:href="@{/logout}">Выход</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>История бронирований</h2>
+        
+        <div th:if="${param.created}" class="alert alert-success">
+            Бронирование успешно создано!
+        </div>
+        <div th:if="${param.cancelled}" class="alert alert-success">
+            Бронирование отменено!
+        </div>
+        <div th:if="${param.error}" class="alert alert-danger">
+            <span th:text="${param.error[0]}"></span>
+        </div>
+
+        <table class="table table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>Номер</th>
+                    <th>Дата заезда</th>
+                    <th>Дата выезда</th>
+                    <th>Количество гостей</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="booking : ${bookings}">
+                    <td th:text="${booking.roomNumber}"></td>
+                    <td th:text="${#temporals.format(booking.checkInDate, 'dd.MM.yyyy')}"></td>
+                    <td th:text="${#temporals.format(booking.checkOutDate, 'dd.MM.yyyy')}"></td>
+                    <td th:text="${booking.numberOfGuests}"></td>
+                    <td>
+                        <span th:if="${booking.status == 'ACTIVE'}" class="badge bg-success">Активно</span>
+                        <span th:if="${booking.status == 'CANCELLED'}" class="badge bg-danger">Отменено</span>
+                    </td>
+                    <td>
+                        <form th:if="${booking.status == 'ACTIVE'}" 
+                              th:action="@{/guest/bookings/{id}/cancel(id=${booking.id})}" 
+                              method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-sm btn-danger">Отменить</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
